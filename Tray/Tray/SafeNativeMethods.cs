@@ -8,7 +8,7 @@ namespace SmartTaskbar
     internal static class SafeNativeMethods
     {
         public static IntPtr maxWindow;
-        public static int cloakedval = 1;
+        public static bool cloakedval = true;
         public static bool tryshowbar = true;
 
         #region Taskbar Display State
@@ -219,7 +219,20 @@ namespace SmartTaskbar
         #region DwmGetWindowAttribute
 
         [DllImport("dwmapi.dll")]
-        public static extern int DwmGetWindowAttribute(IntPtr hwnd, int dwAttribute, out int pvAttribute, int cbAttribute);
+        public static extern int DwmGetWindowAttribute(IntPtr hwnd, int dwAttribute, [MarshalAs(UnmanagedType.Bool)] out bool pvAttribute, int cbAttribute);
+
+        #endregion
+
+        #region SendMessageW
+
+        /// Return Type: LRESULT->LONG_PTR->int
+        ///hWnd: HWND->HWND__*
+        ///Msg: UINT->unsigned int
+        ///wParam: WPARAM->UINT_PTR->unsigned int
+        ///lParam: LPARAM->LONG_PTR->int
+        [DllImport("user32.dll", EntryPoint = "SendMessageW")]
+        [return: MarshalAs(UnmanagedType.SysInt)]
+        public static extern int SendMessageW([In()] IntPtr hWnd, uint Msg, [MarshalAs(UnmanagedType.SysUInt)] uint wParam, [MarshalAs(UnmanagedType.SysInt)] int lParam);
 
         #endregion
 

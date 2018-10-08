@@ -70,7 +70,7 @@ namespace SmartTaskbar
                         }
 
                         DwmGetWindowAttribute(h, 14, out cloakedval, sizeof(int));
-                        if (cloakedval != 0)
+                        if (cloakedval)
                         {
                             return true;
                         }
@@ -100,7 +100,7 @@ namespace SmartTaskbar
                 }
 
                 DwmGetWindowAttribute(maxWindow, 14, out cloakedval, sizeof(int));
-                if (cloakedval != 0)
+                if (cloakedval)
                 {
                     goto END;
                 }
