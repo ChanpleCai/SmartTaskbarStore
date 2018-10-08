@@ -22,8 +22,20 @@
     <TargetPlatformVersion>10.0.17134.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
     <DefaultLanguage>zh-CN</DefaultLanguage>
-    <PackageCertificateKeyFile>SmartTaskbar_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>SmartTaskbar_StoreKey.pfx</PackageCertificateKeyFile>
     <EntryPointProjectUniqueName>..\Tray\Tray\Tray.csproj</EntryPointProjectUniqueName>
+    <PackageCertificateThumbprint>3AD4B7CE433AB83A49CD4DF0DAE6FB2AFD7AB4D1</PackageCertificateThumbprint>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
+    <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
+    <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AppxBundle>Always</AppxBundle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -78,6 +90,8 @@
     <Content Include="Images\Wide310x150Logo.scale-150.png" />
     <Content Include="Images\Wide310x150Logo.scale-200.png" />
     <Content Include="Images\Wide310x150Logo.scale-400.png" />
+    <None Include="SmartTaskbar_StoreKey.pfx" />
+    <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tray\Tray\Tray.csproj" />

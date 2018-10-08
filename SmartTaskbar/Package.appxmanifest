@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" IgnorableNamespaces="uap mp rescap">
-  <Identity Name="0e0da461-4065-4c23-ba2e-87587d2a5fbf" Publisher="CN=Chanple" Version="1.0.2.0" />
+  <Identity Name="20535Chanple.SmartTaskbar" Publisher="CN=F5F524C9-8FE8-4344-A509-F43DDE3B3ED6" Version="1.0.2.0" />
   <Properties>
     <DisplayName>SmartTaskbar</DisplayName>
     <PublisherDisplayName>Chanple</PublisherDisplayName>
@@ -20,7 +20,7 @@
         </uap:DefaultTile>
         <uap:SplashScreen Image="Images\SplashScreen.png" />
       </uap:VisualElements>
-    <Extensions>
+      <Extensions>
         <desktop:Extension Category="windows.startupTask" Executable="Tray\SmartTaskbar.exe" EntryPoint="Windows.FullTrustApplication">
           <desktop:StartupTask TaskId="{659a8f49-17b4-4e50-82ca-a3df01310112}" Enabled="true" DisplayName="SmartTaskbar" />
         </desktop:Extension>
