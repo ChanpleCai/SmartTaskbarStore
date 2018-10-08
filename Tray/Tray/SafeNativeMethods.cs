@@ -223,18 +223,5 @@ namespace SmartTaskbar
 
         #endregion
 
-        #region SendMessageW
-
-        /// Return Type: LRESULT->LONG_PTR->int
-        ///hWnd: HWND->HWND__*
-        ///Msg: UINT->unsigned int
-        ///wParam: WPARAM->UINT_PTR->unsigned int
-        ///lParam: LPARAM->LONG_PTR->int
-        [DllImport("user32.dll", EntryPoint = "SendMessageW")]
-        [return: MarshalAs(UnmanagedType.SysInt)]
-        public static extern int SendMessageW([In()] IntPtr hWnd, uint Msg, [MarshalAs(UnmanagedType.SysUInt)] uint wParam, [MarshalAs(UnmanagedType.SysInt)] int lParam);
-
-        #endregion
-
     }
 }

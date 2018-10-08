@@ -6,7 +6,7 @@ using static SmartTaskbar.SafeNativeMethods;
 
 namespace SmartTaskbar
 {
-    internal class SystemTray
+    internal class SystemTray : ApplicationContext
     {
 
         private readonly NotifyIcon notifyIcon;
@@ -212,9 +212,9 @@ namespace SmartTaskbar
 
                 animation.Checked = GetTaskbarAnimation();
 
-                ResetTimer();
                 if (Settings.Default.Auto == true && timer.Enabled == false)
                 {
+                    ResetTimer();
                     timer.Start();
                 }
             };
