@@ -14,7 +14,6 @@ namespace SmartTaskbar
                 if (!createNew)
                     return;
                 Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
                 Application.Run(new SystemTray());
             }
         }

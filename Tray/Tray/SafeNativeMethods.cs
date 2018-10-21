@@ -59,7 +59,7 @@ namespace SmartTaskbar
         ///dwMessage: DWORD->unsigned int
         ///pData: PAPPBARDATA->_AppBarData*
         [DllImport("shell32.dll", EntryPoint = "SHAppBarMessage", CallingConvention = CallingConvention.StdCall)]
-        public static extern uint SHAppBarMessage(uint dwMessage, ref APPBARDATA pData);
+        public static extern IntPtr SHAppBarMessage(uint dwMessage, ref APPBARDATA pData);
         /// <summary>
         /// Set Auto-Hide Mode
         /// </summary>
@@ -68,7 +68,7 @@ namespace SmartTaskbar
             msgData.lParam = 1;
             SHAppBarMessage(10, ref msgData);
             //see https://github.com/ChanpleCai/SmartTaskbar/issues/27
-            PostMessageW(FindWindow("Shell_TrayWnd", null), 0x05CB, 0, 0);
+            PostMessageW(FindWindow("Shell_TrayWnd", null), 0x05CB, (IntPtr)0, (IntPtr)0);
         }
         /// <summary>
         /// Set AlwaysOnTop Mode
@@ -84,7 +84,7 @@ namespace SmartTaskbar
         /// <returns>Return true when Auto-Hide</returns>
         public static bool IsHide()
         {
-            return SHAppBarMessage(4, ref msgData) == 1;
+            return SHAppBarMessage(4, ref msgData) == (IntPtr)1;
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace SmartTaskbar
         ///fWinIni: UINT->uint
         [DllImport("user32.dll", EntryPoint = "SystemParametersInfoW")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool SetSystemParameters(uint uiAction, uint uiParam, bool pvParam, uint fWinIni);
+        private static extern bool SetSystemParameters(uint uiAction, uint uiParam, IntPtr pvParam, uint fWinIni);
 
         /// Return Type: BOOL->bool
         ///uiAction: UINT->uint
@@ -140,7 +140,7 @@ namespace SmartTaskbar
         public static bool ChangeTaskbarAnimation()
         {
             animation = !animation;
-            SetSystemParameters(0x1003, 0, animation, 0x01 | 0x02);
+            SetSystemParameters(0x1003, 0, animation? (IntPtr)1 : IntPtr.Zero, 0x01 | 0x02);
             return animation;
         }
         #endregion
@@ -233,8 +233,7 @@ namespace SmartTaskbar
         ///wParam: WPARAM->UINT_PTR->unsigned int
         ///lParam: LPARAM->LONG_PTR->int
         [DllImport("user32.dll", EntryPoint = "PostMessageW")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool PostMessageW(IntPtr hWnd, uint Msg, uint wParam, int lParam);
+        public static extern int PostMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
         #endregion
 
@@ -243,7 +242,7 @@ namespace SmartTaskbar
         /// Return Type: HWND->HWND__*
         ///lpClassName: LPCWSTR->WCHAR*
         ///lpWindowName: LPCWSTR->WCHAR*
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         private static extern IntPtr FindWindow(string strClassName, string strWindowName);
 
         #endregion
