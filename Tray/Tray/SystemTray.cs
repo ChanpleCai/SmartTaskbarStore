@@ -182,23 +182,13 @@ namespace SmartTaskbar
 
             animation.Click += (s, e) => animation.Checked = ChangeTaskbarAnimation();
 
-            auto.Click += (s, e) =>
-            {
-                if (Settings.Default.Auto)
-                {
-                    Settings.Default.Auto = false;
-                    Show();
-                }
-                else
-                {
-                    Settings.Default.Auto = true;
-                }
-            };
+            auto.Click += (s, e) => Settings.Default.Auto = !Settings.Default.Auto;
 
             exit.Click += (s, e) =>
             {
                 timer.Stop();
-                Show();
+                if (Settings.Default.Auto)
+                    Show();
                 notifyIcon.Dispose();
                 Application.Exit();
             };
@@ -212,11 +202,13 @@ namespace SmartTaskbar
 
                 animation.Checked = GetTaskbarAnimation();
 
-                if (Settings.Default.Auto == true && timer.Enabled == false)
+                if (Settings.Default.Auto == false || timer.Enabled)
                 {
-                    ResetTimer();
-                    timer.Start();
+                    return;
                 }
+
+                ResetTimer();
+                timer.Start();
             };
 
             notifyIcon.MouseDoubleClick += (s, e) =>

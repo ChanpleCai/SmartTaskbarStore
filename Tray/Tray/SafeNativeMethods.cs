@@ -67,6 +67,8 @@ namespace SmartTaskbar
         {
             msgData.lParam = 1;
             SHAppBarMessage(10, ref msgData);
+            //see https://github.com/ChanpleCai/SmartTaskbar/issues/27
+            PostMessageW(FindWindow("Shell_TrayWnd", null), 0x05CB, 0, 0);
         }
         /// <summary>
         /// Set AlwaysOnTop Mode
@@ -220,6 +222,29 @@ namespace SmartTaskbar
 
         [DllImport("dwmapi.dll")]
         public static extern int DwmGetWindowAttribute(IntPtr hwnd, int dwAttribute, [MarshalAs(UnmanagedType.Bool)] out bool pvAttribute, int cbAttribute);
+
+        #endregion
+
+        #region PostMessage
+
+        /// Return Type: BOOL->int
+        ///hWnd: HWND->HWND__*
+        ///Msg: UINT->unsigned int
+        ///wParam: WPARAM->UINT_PTR->unsigned int
+        ///lParam: LPARAM->LONG_PTR->int
+        [DllImport("user32.dll", EntryPoint = "PostMessageW")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool PostMessageW(IntPtr hWnd, uint Msg, uint wParam, int lParam);
+
+        #endregion
+
+        #region FindWindow
+
+        /// Return Type: HWND->HWND__*
+        ///lpClassName: LPCWSTR->WCHAR*
+        ///lpWindowName: LPCWSTR->WCHAR*
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr FindWindow(string strClassName, string strWindowName);
 
         #endregion
 
