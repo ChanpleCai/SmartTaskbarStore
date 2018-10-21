@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Security;
+using SmartTaskbar.Properties;
 
 namespace SmartTaskbar
 {
@@ -87,20 +88,6 @@ namespace SmartTaskbar
             return SHAppBarMessage(4, ref msgData) == (IntPtr)1;
         }
 
-        /// <summary>
-        /// Change the display status of the Taskbar
-        /// </summary>
-        public static void ChangeDisplayState()
-        {
-            if (IsHide())
-            {
-                Show();
-            }
-            else
-            {
-                Hide();
-            }
-        }
         #endregion
 
         #region Taskbar Animation

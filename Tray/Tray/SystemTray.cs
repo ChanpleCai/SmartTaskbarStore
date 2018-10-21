@@ -202,7 +202,7 @@ namespace SmartTaskbar
 
                 animation.Checked = GetTaskbarAnimation();
 
-                if (Settings.Default.Auto == false || timer.Enabled)
+                if (Settings.Default.Auto == false)
                 {
                     return;
                 }
@@ -213,6 +213,11 @@ namespace SmartTaskbar
 
             notifyIcon.MouseDoubleClick += (s, e) =>
             {
+                if (e.Button == MouseButtons.Right)
+                {
+                    return;
+                }
+
                 Settings.Default.Auto = false;
                 if (IsHide())
                 {
