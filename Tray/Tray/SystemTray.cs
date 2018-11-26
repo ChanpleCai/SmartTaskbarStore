@@ -1,6 +1,7 @@
 ﻿using SmartTaskbar.Properties;
 using System;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 using static SmartTaskbar.SafeNativeMethods;
 
@@ -18,105 +19,81 @@ namespace SmartTaskbar
 
         public SystemTray()
         {
-            SHAppBarMessage(5, ref msgData);
             timer.Interval = 375;
             timer.Tick += (s, e) =>
             {
-                if (maxWindow == IntPtr.Zero)
+                switch (MsgData.uEdge)
                 {
-                    switch (msgData.uEdge)
-                    {
-                        case 3:
-                            if (Control.MousePosition.Y >= msgData.rc.top)
-                            {
-                                return;
-                            }
-
-                            break;
-                        case 0:
-                            if (Control.MousePosition.X <= msgData.rc.right)
-                            {
-                                return;
-                            }
-
-                            break;
-                        case 1:
-                            if (Control.MousePosition.Y <= msgData.rc.bottom)
-                            {
-                                return;
-                            }
-
-                            break;
-                        default:
-                            if (Control.MousePosition.X >= msgData.rc.left)
-                            {
-                                return;
-                            }
-
-                            break;
-                    }
-
-                    EnumWindows((h, l) =>
-                    {
-                        if (IsWindowVisible(h) == false)
-                        {
-                            return true;
-                        }
-
-                        GetWindowPlacement(h, ref placement);
-                        if (placement.showCmd != 3)
-                        {
-                            return true;
-                        }
-
-                        DwmGetWindowAttribute(h, 14, out cloakedval, sizeof(int));
-                        if (cloakedval)
-                        {
-                            return true;
-                        }
-
-                        maxWindow = h;
-                        return false;
-                    }, IntPtr.Zero);
-
-                    if (maxWindow == IntPtr.Zero)
-                    {
-                        if (tryshowbar == false)
+                    case 3:
+                        if (Control.MousePosition.Y >= MsgData.rc.top)
                         {
                             return;
                         }
 
-                        tryshowbar = false;
-                        Show();
-                        return;
-                    }
-                    Hide();
-                    timer.Interval = 500;
+                        break;
+                    case 0:
+                        if (Control.MousePosition.X <= MsgData.rc.right)
+                        {
+                            return;
+                        }
+
+                        break;
+                    case 1:
+                        if (Control.MousePosition.Y <= MsgData.rc.bottom)
+                        {
+                            return;
+                        }
+
+                        break;
+                    default:
+                        if (Control.MousePosition.X >= MsgData.rc.left)
+                        {
+                            return;
+                        }
+
+                        break;
                 }
 
-                if (IsWindowVisible(maxWindow) == false)
-                {
-                    goto END;
-                }
+                Forewindow = GetForegroundWindow();
 
-                DwmGetWindowAttribute(maxWindow, 14, out cloakedval, sizeof(int));
-                if (cloakedval)
+                if (IsWindowVisible(Forewindow) == false)
                 {
-                    goto END;
-                }
-
-                GetWindowPlacement(maxWindow, ref placement);
-                if (placement.showCmd == 3)
-                {
+                    PostMessageW(FindWindow("Shell_TrayWnd", null), 0x05CB, (IntPtr)1, (IntPtr)0x10001);
                     return;
                 }
 
-                END:
-                ResetTimer();
+
+                DwmGetWindowAttribute(Forewindow, 14, out Cloakedval, sizeof(int));
+                if (Cloakedval)
+                {
+                    PostMessageW(FindWindow("Shell_TrayWnd", null), 0x05CB, (IntPtr)1, (IntPtr)0x10001);
+                    return;
+                }
+
+
+                StringBuilder sb = new StringBuilder(255);
+                GetClassNameW(Forewindow, sb, 255);
+                string name = sb.ToString();
+                if (name == "WorkerW" || name == "Progman")
+                {
+                    PostMessageW(FindWindow("Shell_TrayWnd", null), 0x05CB, (IntPtr)1, (IntPtr)0x10001);
+                    return;
+                }
+
+                GetWindowRect(Forewindow, out TagRect lpRect);
+                SHAppBarMessage(5, ref MsgData);
+
+                if (MsgData.rc.top > lpRect.bottom || lpRect.left > MsgData.rc.right || MsgData.rc.left > lpRect.right || lpRect.top > MsgData.rc.bottom)
+                {
+                    PostMessageW(FindWindow("Shell_TrayWnd", null), 0x05CB, (IntPtr)1, (IntPtr)0x10001);
+                    return;
+                }
+                PostMessageW(FindWindow("Shell_TrayWnd", null), 0x05CB, (IntPtr)0, (IntPtr)0);
             };
+
             if (Settings.Default.Auto)
             {
-                timer.Start();
+                ResetTimer();
             }
 
             #region Initialization
@@ -171,7 +148,6 @@ namespace SmartTaskbar
                 {
                     auto.Checked = true;
                     ResetTimer();
-                    timer.Start();
                 }
                 else
                 {
@@ -188,7 +164,10 @@ namespace SmartTaskbar
             {
                 timer.Stop();
                 if (Settings.Default.Auto)
+                {
                     Show();
+                }
+
                 notifyIcon.Dispose();
                 Application.Exit();
             };
@@ -208,7 +187,6 @@ namespace SmartTaskbar
                 }
 
                 ResetTimer();
-                timer.Start();
             };
 
             notifyIcon.MouseDoubleClick += (s, e) =>
@@ -240,10 +218,8 @@ namespace SmartTaskbar
 
         private void ResetTimer()
         {
-            tryshowbar = true;
-            maxWindow = IntPtr.Zero;
-            SHAppBarMessage(5, ref msgData);
-            timer.Interval = 375;
+            Hide();
+            timer.Start();
         }
     }
 }

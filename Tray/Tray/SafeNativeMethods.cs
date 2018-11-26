@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Text;
 using SmartTaskbar.Properties;
 
 namespace SmartTaskbar
@@ -8,13 +9,12 @@ namespace SmartTaskbar
     [SuppressUnmanagedCodeSecurity]
     internal static class SafeNativeMethods
     {
-        public static IntPtr maxWindow;
-        public static bool cloakedval = true;
-        public static bool tryshowbar = true;
+        public static IntPtr Forewindow;
+        public static bool Cloakedval = true;
 
         #region Taskbar Display State
 
-        public static APPBARDATA msgData = new APPBARDATA { cbSize = (uint)Marshal.SizeOf(typeof(APPBARDATA)) };
+        public static APPBARDATA MsgData = new APPBARDATA { cbSize = (uint)Marshal.SizeOf(typeof(APPBARDATA)) };
 
         [StructLayout(LayoutKind.Sequential)]
         public struct APPBARDATA
@@ -33,14 +33,14 @@ namespace SmartTaskbar
             public uint uEdge;
 
             /// RECT->TagRECT
-            public TagRECT rc;
+            public TagRect rc;
 
             /// LPARAM->LONG_PTR->int
             public int lParam;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct TagRECT
+        public struct TagRect
         {
 
             /// LONG->int
@@ -66,8 +66,8 @@ namespace SmartTaskbar
         /// </summary>
         public static void Hide()
         {
-            msgData.lParam = 1;
-            SHAppBarMessage(10, ref msgData);
+            MsgData.lParam = 1;
+            SHAppBarMessage(10, ref MsgData);
             //see https://github.com/ChanpleCai/SmartTaskbar/issues/27
             PostMessageW(FindWindow("Shell_TrayWnd", null), 0x05CB, (IntPtr)0, (IntPtr)0);
         }
@@ -76,8 +76,8 @@ namespace SmartTaskbar
         /// </summary>
         public static void Show()
         {
-            msgData.lParam = 0;
-            SHAppBarMessage(10, ref msgData);
+            MsgData.lParam = 0;
+            SHAppBarMessage(10, ref MsgData);
         }
         /// <summary>
         /// Indicate if the Taskbar is Auto-Hide
@@ -85,7 +85,7 @@ namespace SmartTaskbar
         /// <returns>Return true when Auto-Hide</returns>
         public static bool IsHide()
         {
-            return SHAppBarMessage(4, ref msgData) == (IntPtr)1;
+            return SHAppBarMessage(4, ref MsgData) == (IntPtr)1;
         }
 
         #endregion
@@ -132,87 +132,7 @@ namespace SmartTaskbar
         }
         #endregion
 
-        #region GetWindowPlacement
-
-        public static TagWINDOWPLACEMENT placement = new TagWINDOWPLACEMENT { length = (uint)Marshal.SizeOf(typeof(TagWINDOWPLACEMENT)) };
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct TagWINDOWPLACEMENT
-        {
-
-            /// UINT->unsigned int
-            public uint length;
-
-            /// UINT->unsigned int
-            public uint flags;
-
-            /// UINT->unsigned int
-            public uint showCmd;
-
-            /// POINT->Point
-            public Point ptMinPosition;
-
-            /// POINT->Point
-            public Point ptMaxPosition;
-
-            /// RECT->TagRECT
-            public TagRECT rcNormalPosition;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct Point
-        {
-
-            /// LONG->int
-            public int x;
-
-            /// LONG->int
-            public int y;
-        }
-
-        /// Return Type: BOOL->int
-        ///hWnd: HWND->HWND__*
-        ///lpwndpl: WINDOWPLACEMENT*
-        [DllImport("user32.dll", EntryPoint = "GetWindowPlacement")]
-        public static extern int GetWindowPlacement([In()] IntPtr hWnd, ref TagWINDOWPLACEMENT lpwndpl);
-
-        #endregion
-
-        #region EnumWindows
-
-        /// Return Type: BOOL->int
-        ///param0: HWND->HWND__*
-        ///param1: LPARAM->LONG_PTR->int
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public delegate bool WNDENUMPROC(IntPtr param0, IntPtr param1);
-
-        /// Return Type: BOOL->int
-        ///lpEnumFunc: WNDENUMPROC
-        ///lParam: LPARAM->LONG_PTR->int
-        [DllImport("user32.dll", EntryPoint = "EnumWindows")]
-        public static extern int EnumWindows(WNDENUMPROC lpEnumFunc, IntPtr lParam);
-        #endregion
-
-        #region IsWindowVisible
-
-        /// Return Type: BOOL->int
-        ///hWnd: HWND->HWND__*
-        [DllImport("user32.dll", EntryPoint = "IsWindowVisible")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool IsWindowVisible([In()] IntPtr hWnd);
-
-        #endregion
-
-
-        #region DwmGetWindowAttribute
-
-        [DllImport("dwmapi.dll")]
-        public static extern int DwmGetWindowAttribute(IntPtr hwnd, int dwAttribute, [MarshalAs(UnmanagedType.Bool)] out bool pvAttribute, int cbAttribute);
-
-        #endregion
-
-        #region PostMessage
+        #region PostMessageW
 
         /// Return Type: BOOL->int
         ///hWnd: HWND->HWND__*
@@ -230,9 +150,55 @@ namespace SmartTaskbar
         ///lpClassName: LPCWSTR->WCHAR*
         ///lpWindowName: LPCWSTR->WCHAR*
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        private static extern IntPtr FindWindow(string strClassName, string strWindowName);
+        public static extern IntPtr FindWindow(string strClassName, string strWindowName);
 
         #endregion
 
+        #region GetForegroundWindow
+
+        /// Return Type: HWND->HWND__*
+        [DllImport("user32.dll", EntryPoint = "GetForegroundWindow")]
+        public static extern IntPtr GetForegroundWindow();
+
+        #endregion
+
+        #region GetClassNameW
+
+        /// Return Type: int
+        ///hWnd: HWND->HWND__*
+        ///lpClassName: LPWSTR->WCHAR*
+        ///nMaxCount: int
+        [DllImport("user32.dll")]
+        public static extern int GetClassNameW([In()] IntPtr hWnd, [Out()] [MarshalAs(UnmanagedType.LPWStr)] StringBuilder lpClassName, int nMaxCount);
+
+        #endregion
+
+        #region GetWindowRect
+
+        /// Return Type: BOOL->int
+        ///hWnd: HWND->HWND__*
+        ///lpRect: LPRECT->tagRECT*
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetWindowRect([In()] IntPtr hWnd, [Out()] out TagRect lpRect);
+
+        #endregion
+
+        #region DwmGetWindowAttribute
+
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmGetWindowAttribute(IntPtr hwnd, int dwAttribute, [MarshalAs(UnmanagedType.Bool)] out bool pvAttribute, int cbAttribute);
+
+        #endregion
+
+        #region IsWindowVisible
+
+        /// Return Type: BOOL->int
+        ///hWnd: HWND->HWND__*
+        [DllImport("user32.dll", EntryPoint = "IsWindowVisible")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsWindowVisible([In()] IntPtr hWnd);
+
+        #endregion
     }
 }
