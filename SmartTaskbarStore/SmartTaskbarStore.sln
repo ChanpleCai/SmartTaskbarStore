@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "SmartTaskbarStore", "SmartTaskbarStore\SmartTaskbarStore.wapproj", "{C580FBD6-A21A-4989-9BD3-1EB60B102A9B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartTaskbar", "..\SmartTaskbar\SmartTaskbar.csproj", "{CFA43E8D-04E7-47F1-A690-2EE4D46E98F8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2A874859-7162-4782-8279-FAA722F2F8E4} = {2A874859-7162-4782-8279-FAA722F2F8E4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartTaskbar.Core", "..\SmartTaskbar.Core\SmartTaskbar.Core.csproj", "{2A874859-7162-4782-8279-FAA722F2F8E4}"
 EndProject
